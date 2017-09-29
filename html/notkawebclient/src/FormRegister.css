@@ -1,0 +1,42 @@
+.div1 {
+        position:fixed;
+        /*top: 50%;*/
+        left: 50%;
+        width:50em;
+        /*height:18em;*/
+        /*#margin-top: -9em; /*set to a negative number 1/2 of your height*/
+        margin-left: -15em; /*set to a negative number 1/2 of your width*/
+        /*border: 1px solid #ccc;*/
+        background-color: #f3f3f3;
+}
+
+.div2 {
+        position:fixed;
+        top: 60%;
+        left: 50%;
+        width:50em;
+        /*height:18em;*/
+        /*#margin-top: -9em; /*set to a negative number 1/2 of your height*/
+        /*margin-left: -15em; /*set to a negative number 1/2 of your width*/
+        /*border: 1px solid #ccc;*/
+        background-color: #f3f3f3;
+}
+
+#container {
+        position:fixed;
+        top: 50%;
+        left: 50%;
+        /*width:11em;*/
+        height:18em;
+        margin-top: -10em; /*set to a negative number 1/2 of your height*/
+        margin-left: -10em; /*set to a negative number 1/2 of your width*/
+        /*border: 1px solid #ccc;*/
+        background-color: #f3f3f3;
+}
+
+
+
+/*
+#root {
+  z-index: 2;
+}*/

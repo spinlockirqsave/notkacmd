@@ -1,0 +1,339 @@
+<!--
+/*
+ * webclient.html
+ *
+ * Copyright(C) 2017, Piotr Gregor <piotrgregor@rsyncme.org>
+ *
+ * Notka Online Clipboard
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+-->
+<html>
+	<head>
+		<title>WebSocket Client</title>
+	</head>
+	<body>
+		<h1>WebSocket Client</h1>
+		<p>
+		<button onClick="initWebSocket();">Connect</button>
+		<button onClick="stopWebSocket();">Disconnect</button>
+		<button onClick="checkSocket();">State</button>
+		</p>
+		<p>
+		<textarea id="debugTextArea" style="width:400px;height:200px;"></textarea>
+                <textarea id="NotkaText" style="width:800px;height:200px;"></textarea>
+		</p>
+		<p>
+                <input type="text" id="inputLogin" value="login" />
+                <input type="text" id="inputPassword" value="password" />
+                <button onClick="tx_msg_login();">Login</button>
+                <button onClick="tx_msg_save_req();">Save</button>
+                <input type="text" id="inputText" onkeydown="if(event.keyCode==13)sendMessageBin2();"/>
+		</p>
+
+		<script type="text/javascript">
+var debugTextArea = document.getElementById("debugTextArea");
+
+function debug(message) {
+	debugTextArea.value += message + "\n";
+	debugTextArea.scrollTop = debugTextArea.scrollHeight;
+}
+
+function sendMessage() {
+        var login = document.getElementById("inputLogin").value;
+        var msg = document.getElementById("inputText").value;
+        var strToSend = login + ": " + msg;
+	if ( websocket != null )
+	{
+		document.getElementById("inputText").value = "";
+		websocket.send( strToSend, { binary: true } );
+		console.log( "string sent :", '"'+strToSend+'"' );
+		debug(strToSend);
+	}
+}
+
+function sendMessageBin() {
+	const array = new Int8Array(5);
+
+	for (var i = 0; i < array.length; ++i) {
+		array[i] = i;
+	}
+	console.log(array);
+	websocket.send(array);
+}
+
+function str2ab(str) {
+	var buf = new ArrayBuffer(str.length); // but should be 2 bytes for each char for Unicode
+	var bufView = new Uint8Array(buf);
+	for (var i=0, strLen=str.length; i<strLen; i++) {
+		bufView[i] = str.charCodeAt(i);
+	}
+	return buf;
+}
+
+function sendMessageBin2() {
+        var nickname = document.getElementById("inputLogin").value;
+        var msg = document.getElementById("inputText").value;
+	var strToSend = nickname + ": " + msg;
+        if (websocket != null)
+	{
+		document.getElementById("inputText").value = "";
+		//const array = Int8Array.from(strToSend);
+		var array = str2ab(strToSend);
+		websocket.send( array );
+		console.log( "string sent as array :", '"'+strToSend+'"' );
+		debug(strToSend);
+	}
+}
+
+var wsUri = "ws://192.168.1.104:1235";
+var websocket = null;
+var endiannes = 0;      // 0 - le, 1 - be
+
+var MsgTXId = {
+        IdMsgUnknown            : -1,
+        IdMsgHandshakeAck       : 1,
+        IdMsgLoginAck           : 2
+}
+
+function initWebSocket() {
+	try {
+		if (typeof MozWebSocket == 'function')
+			WebSocket = MozWebSocket;
+		if ( websocket && websocket.readyState == 1 )
+			websocket.close();
+		websocket = new WebSocket( wsUri );
+		websocket.binaryType = 'arraybuffer';
+		websocket.onopen = function (evt) {
+			debug("CONNECTED");
+                        check_endianness();
+                        tx_MsgSYN();
+		};
+		websocket.onclose = function (evt) {
+			debug("DISCONNECTED");
+		};
+		websocket.onmessage = function (evt) {
+			console.log( "Message received :", evt.data );
+			debug( evt.data );
+                        var raw_msg = new Uint32Array(evt.data, 0, 2);
+                        if (endiannes === 0) {          // but if this machine is le
+                                console.log("swapping");
+                                raw_msg[0] = swap32(raw_msg[0]);
+                                raw_msg[1] = swap32(raw_msg[1]);
+                        }
+                        var payload_id = raw_msg[0];
+                        var payload_len = raw_msg[1];
+                        debug("Payload id: " + payload_id);
+                        debug("Payload len: " + payload_len);
+
+                        switch (payload_id)
+                        {
+                                case MsgTXId.IdMsgLoginAck: {
+                                        rx_msg_login_ack(evt.data);
+                                        break;
+                                }
+                                default: {
+                                        break;
+                                }
+                        }
+		};
+		websocket.onerror = function (evt) {
+			debug('ERROR: ' + evt.data);
+		};
+	} catch (exception) {
+		debug('ERROR: ' + exception);
+	}
+}
+
+function stopWebSocket() {
+	if (websocket)
+		websocket.close();
+}
+
+function checkSocket() {
+	if (websocket != null) {
+		var stateStr;
+		switch (websocket.readyState) {
+		case 0: {
+			stateStr = "CONNECTING";
+			break;
+		}
+		case 1: {
+			stateStr = "OPEN";
+			break;
+		}
+		case 2: {
+			stateStr = "CLOSING";
+			break;
+		}
+		case 3: {
+			stateStr = "CLOSED";
+			break;
+		}
+		default: {
+			stateStr = "UNKNOWN";
+			break;
+		}
+		}
+		debug("WebSocket state = " + websocket.readyState + " ( " + stateStr + " )");
+	} else {
+		debug("WebSocket is null");
+	}
+}
+
+function tx_MsgSYN() {
+        var msg = new ArrayBuffer(8);
+        var bufView = new Uint32Array(msg);     // by default js uses big endian
+        bufView[0] = 1;
+        bufView[1] = 0;
+        if ( websocket != null ) {
+                if (endiannes === 0) {          // but if this machine is le
+                        console.log("swapping");
+                        bufView[0] = swap32(bufView[0]);
+                        bufView[1] = swap32(bufView[1]);
+                }
+
+                websocket.send(msg);
+                console.log( "sent MsgSYN :", '"'+msg+'"' );
+                debug(msg);
+        }
+}
+
+function tx_msg_save_req() {
+        var msg = new ArrayBuffer(8);             // 4 bytes - id, 4 - len
+        var bufView32 = new Uint32Array(msg);     // by default js uses big endian
+        bufView32[0] = 3;                         // MsgRX::MsgSaveReq (rx from server point of view)
+        bufView32[1] = 0;                         // payload length, 0 so far
+        if (endiannes === 0) {                    // but if this machine is le
+                console.log("swapping");
+                bufView32[0] = swap32(bufView32[0]);
+                bufView32[1] = swap32(bufView32[1]);
+        }
+
+        var login = document.getElementById("inputLogin").value;
+        var login_bin = new ArrayBuffer(32);
+        var bufView8 = new Uint8Array(login_bin);
+        for (var i=0, strLen=login.length; i<strLen && i<32; i++) {
+                bufView8[i] = login.charCodeAt(i);
+        }
+
+        var notka = document.getElementById("NotkaText").value;
+        var notka_bin = str2ab(notka);
+
+        bufView32[1] = 32 + notka.length;               // payload length = 32 byte login + notka len
+        if (endiannes === 0) {                          // but if this machine is le
+                console.log("swapping");
+                bufView32[1] = swap32(bufView32[1]);
+        }
+
+        msg = _appendBuffer(msg, login_bin);
+        msg = _appendBuffer(msg, notka_bin);
+
+        if (websocket != null)
+        {
+                websocket.send(msg);
+                console.log("tx_msg_save_req: " + msg);
+        }
+}
+
+function tx_msg_login() {
+        var msg = new ArrayBuffer(8);             // 4 bytes - id, 4 - len
+        var bufView32 = new Uint32Array(msg);     // by default js uses big endian
+        bufView32[0] = 2;                         // MsgRX::MsgLogin (rx from server point of view)
+        bufView32[1] = 64;                        // payload length, login 32 bytes + pass 32 bytes
+        if (endiannes === 0) {                    // but if this machine is le
+                console.log("swapping");
+                bufView32[0] = swap32(bufView32[0]);
+                bufView32[1] = swap32(bufView32[1]);
+        }
+
+        var login = document.getElementById("inputLogin").value;
+        var login_bin = new ArrayBuffer(32);
+        var bufView8 = new Uint8Array(login_bin);
+        for (var i=0, strLen=login.length; i<strLen && i<32; i++) {
+                bufView8[i] = login.charCodeAt(i);
+        }
+
+        var pass = document.getElementById("inputPassword").value;
+        var pass_bin = new ArrayBuffer(32);
+        bufView8 = new Uint8Array(pass_bin);
+        for (var i=0, strLen=pass.length; i<strLen && i<32; i++) {
+                bufView8[i] = pass.charCodeAt(i);
+        }
+
+        msg = _appendBuffer(msg, login_bin);
+        msg = _appendBuffer(msg, pass_bin);
+
+        if (websocket != null)
+        {
+                websocket.send(msg);
+                console.log("tx_msg_login: " + msg);
+        }
+}
+
+function rx_msg_login_ack(data) {
+        var raw_msg = new Uint8Array(data);
+        var error_code = raw_msg[8];
+        if (error_code === 0) {
+                // login failed
+                debug("Login failed");
+        } else {
+                // successful
+                debug("Login successful");
+        }
+}
+
+function swap32(val) {
+    return ((val & 0xFF) << 24)
+           | ((val & 0xFF00) << 8)
+           | ((val >> 8) & 0xFF00)
+           | ((val >> 24) & 0xFF);
+}
+
+function swap16(val) {
+    return ((val & 0xFF) << 8)
+           | ((val >> 8) & 0xFF);
+}
+
+function check_endianness() {
+    var arrayBuffer = new ArrayBuffer(2);
+    var uint8Array = new Uint8Array(arrayBuffer);
+    var uint16array = new Uint16Array(arrayBuffer);
+    uint8Array[0] = 0xAA; // set first byte
+    uint8Array[1] = 0xBB; // set second byte
+
+    if (uint16array[0] === 0xBBAA)
+        endiannes = 0; // le
+    else if (uint16array[0] === 0xAABB)
+        endiannes = 1; // be
+    else {
+        endiannes = 2;
+        throw new Error("Weird ediannes!");
+    }
+}
+
+/**
+ * Creates a new Uint8Array based on two different ArrayBuffers
+ *
+ * @private
+ * @param {ArrayBuffers} buffer1 The first buffer.
+ * @param {ArrayBuffers} buffer2 The second buffer.
+ * @return {ArrayBuffers} The new ArrayBuffer created out of the two.
+ */
+var _appendBuffer = function(buffer1, buffer2) {
+  var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+  tmp.set(new Uint8Array(buffer1), 0);
+  tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+  return tmp.buffer;
+};
+		</script>
+	</body>
+</html>

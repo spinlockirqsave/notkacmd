@@ -1,0 +1,51 @@
+body {
+        height: 100vh;
+}
+
+#main {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        /*background-color: #e6f2ff;*/
+        /*background-color: #99caff;*/
+        font-size: 20px;
+}
+
+#main2 {
+        font-size: 40px;
+}
+
+#header-text {
+        font-size: 100px;
+}
+
+#HelloMessage {
+        font-size: 100px;
+}
+
+#row1 {
+        position:       fixed;
+        width: 100%;
+        top: 0%;
+        background-color: #c9f2ff;
+}
+
+#row2 {
+        position:       fixed;
+        width: 100%;
+        top: 30%;
+        background-color: #e8f2ff;
+}
+
+#row3 {
+        position:       fixed;
+        width: 100%;
+        top: 70%;
+        background-color: #d8f2ff;
+}
+
+#Notka-text {
+        position: absolute;
+        top: 160px;
+        width: 100%;
+}

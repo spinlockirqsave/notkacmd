@@ -1,0 +1,41 @@
+Notka Online Clipboard
+=====================
+
+Notka is kind of online storage for text. In Polish it means 'short text message'.
+You can open your notka in browser from any internet connected device
+and use/edit/save your text.
+
+In technology terms this is
+
+        - small http server serving http/javascript content
+          with React (https://facebook.github.io/react)
+
+        - C++ backend server written with Qt
+
+        - MySql database
+
+
+Try it
+======
+
+Try it online at www.notka.online
+Please register or login as a default user with following credentials:
+
+        - user: "user"
+        - password: "password"
+
+You can also register with login-only, no passowrd mode.
+Save text, reload the page or open it from different place
+and have your notka back.
+
+
+FEEDBACK/COMMENTS/CONTRIBUTIONS
+===============================
+
+All feedback is welcome, constructive comments are welcome,
+useful contributions are welcome.
+Source:		www.github.com/spinlockirqsave/notkacmd.git
+
+
+Copyright(C) 2017, Piotr Gregor <piotrgregor@rsyncme.org>
+GNU GPLv2
