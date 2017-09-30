@@ -32,7 +32,7 @@ export class FormNotka extends React.Component {
     this.alert_ok = this.alert_ok.bind(this);
   }
 
-  static notka = "You don't have any notka yet. Simply write this here and click save to store it in the cloud. You can access your notka from wherever you want.";
+  static notka = "You don't have any notka yet. Simply write this here and click the Save button to store it in the cloud. You can then access your notka from any internet connected device.";
 
   alert_ok() {
         this.msg.show('OK. Saved.', {
