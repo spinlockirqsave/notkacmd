@@ -109,7 +109,7 @@ export class FormLogin extends Component {
                         <h1><br/>Register</h1><br/>
                         Please register.<br/>Leave the password empty if you want to login without password.
                         <h1><br/>Login</h1>
-                        <input type="text" name="logininput" id = "logininput" onChange={this.handleChange} ref="logininput" />
+                        <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
                         <h1><br/>Password</h1>
                         <input type="text" name="pass" onChange={this.handleChange} />
                         </div>;
