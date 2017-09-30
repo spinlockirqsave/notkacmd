@@ -1,0 +1,24 @@
+Qt_5_PRIVATE_API {
+    qt_private_api_tag*;
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qdefaultmaskgenerator_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qsslserver_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsocket_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsocketcorsauthenticator_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsocketdataprocessor_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsocketframe_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsockethandshakerequest_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsockethandshakeresponse_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsocketprotocol_p.h@
+    @FILE:/home/ubuntu/notkacmd/qtwebsockets/src/websockets/qwebsocketserver_p.h@
+};
+Qt_5 { *; };
+Qt_5.0 {} Qt_5;
+Qt_5.1 {} Qt_5.0;
+Qt_5.2 {} Qt_5.1;
+Qt_5.3 {} Qt_5.2;
+Qt_5.4 {} Qt_5.3;
+Qt_5.5 {} Qt_5.4;
+Qt_5.6 {} Qt_5.5;
+Qt_5.7 {} Qt_5.6;
+Qt_5.8 {} Qt_5.7;
+Qt_5.9 { qt_version_tag; } Qt_5.8;

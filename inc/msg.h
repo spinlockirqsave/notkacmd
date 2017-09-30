@@ -22,7 +22,7 @@
 #include "../inc/websocketsession.h"
 #include "../inc/globals.h"
 
-#include <QWebSocket>
+#include <QtWebSockets/QWebSocket>
 
 #include <memory>
 

@@ -21,7 +21,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QWebSocket>
+#include <QtWebSockets/QWebSocket>
 #include <QByteArray>
 #include <QMutex>
 #include <QRunnable>

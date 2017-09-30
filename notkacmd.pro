@@ -1,5 +1,20 @@
-QT += core widgets websockets sql
+QT += core widgets sql network
 QT -= gui
+LIBS += -lQt5WebSockets
+
+# If QtWebSockets are installed through apt-get use this
+# LIBS += -L/usr/lib/x86_64-linux-gnu/
+
+# QtWebSockets compiled from source are installed in /usr/local/Qt-5.9.2/lib/
+# by default (qmake/make/sudo make install)
+LIBS += -L/usr/local/Qt-5.9.2/lib/
+
+# Include source in tree of notkacmd project
+INCLUDEPATH += qtwebsockets/include/
+
+# Uncomment if building the first time - this will build and install websockets
+# It should be commented out later as it is needed just the first time project is built.
+# QMAKE_PRE_LINK = cd qtwebsockets; make && sudo make install;
 
 CONFIG += c++14
 
@@ -8,6 +23,9 @@ CONFIG += console
 CONFIG -= app_bundle
 
 TEMPLATE = app
+
+MOC_DIR = moc 
+OBJECTS_DIR = bin
 
 SOURCES += \
     src/endpointwebsocket.cpp \
