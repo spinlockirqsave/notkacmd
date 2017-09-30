@@ -2,15 +2,27 @@ Qt
 ==
 
 Program has been compiled and tested with Qt 5.9.2.
-Qt must be compiled with no gui and with websockets support.
+If to be run on Amazon AWS micro instance then Qt must
+be compiled with no gui option.
+
+git clone https://github.com/qt/qtbase.git
+cd qtbase
+./configure -release -no-opengl -no-dbus
+make 
+
 QtWebSockets must be downloaded, compiled, installed
 and notkacmd linked to their shared library.
+cd qtwebsockets
+$(QTBASEDIR)/bin/qmake -r
+make
 
 To be able to start notkacmd on amazon aws micro instance
 (gui-less) box, export QT_QPA_PLATFORM before running
 notkacmd:
 	
 	export QT_QPA_PLATFORM=offscreen
+	notkacmd
+
 
 REACT
 =====
@@ -18,4 +30,6 @@ REACT
 Notka Html/JavaScript frontend written in React uses react-alert,
 so be sure to install it in html/notkawebclient with:
 
-	npm install react-alert 
+	npm install react-alert
+
+ 
