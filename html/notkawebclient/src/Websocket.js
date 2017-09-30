@@ -97,15 +97,6 @@ function tx_MsgSYN() {
         }
 }
 
-function LoginFailedWrongPass() {
-    return (
-                <div>
-                <h1>Login failed</h1>
-                <h2>Wrong password...</h2>
-                </div>
-    );
-}
-
 function Greeting(name) {
   const element = (
     <div>
@@ -165,13 +156,11 @@ function rx_msg_login_ack(data) {
             if (status === WsState.LOGIN) {
                 // Now give password.
                 FL.FormLogin.updateLoginState(WsState.LOGIN_PASS);
-                //const element = React.createElement(FL.FormLogin);
                 ReactDOM.render(<FL.FormLogin />, document.getElementById('root'));
             } else {
                     // Wrong password.
                     FL.FormLogin.updateLoginState(WsState.LOGIN_FAIL);
-                    const element = <LoginFailedWrongPass />
-                    ReactDOM.render(element, document.getElementById('root'));
+                    ReactDOM.render(<FL.FormLogin />, document.getElementById('root'));
             }
     } else if (error_code === SrvLoginState.REGISTERED) {
             FL.FormLogin.updateLoginState(WsState.REGISTERED);

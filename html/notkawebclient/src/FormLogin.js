@@ -22,8 +22,8 @@ import './FormLogin.css';
 
 var ws = require('./Websocket.js');
 
-function LoginStatus(text) {
-        return <h1>{text}</h1>;
+function LoginStatus(props) {
+        return <h1>{props.text}</h1>;
 }
 
 export class FormLogin extends Component {
@@ -36,7 +36,8 @@ export class FormLogin extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleRegisterClick = this.handleRegisterClick;
+    this.handleRegisterClick = this.handleRegisterClick.bind(this);
+    this.handleLoginNowClick = this.handleLoginNowClick.bind(this);
   }
 
   static loginState = ws.WsState.LOGIN;
@@ -79,6 +80,15 @@ export class FormLogin extends Component {
        ReactDOM.render(<FormLogin />, document.getElementById('root'));
   }
 
+  handleLoginNowClick(e) {
+       e.preventDefault();
+       alert("LoginNow clicked");
+       FormLogin.updateLoginState(ws.WsState.LOGIN);
+       var newState = { login: '', pass: ''};
+       this.setState(newState);
+       //ReactDOM.render(<FormLogin />, document.getElementById('root'));
+  }
+
   static getLoginState() {
         return FormLogin.loginState;
   }
@@ -110,9 +120,15 @@ export class FormLogin extends Component {
                       <input type="text" name="pass" onChange={this.handleChange} ref="btnPass" />
                     </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGGED_IN) {
-                    return LoginStatus("OK");
+                    return <LoginStatus text="OK" />;
         } else if (FormLogin.loginState === ws.WsState.LOGGED_FAIL) {
-                    return LoginStatus("Logging failed");
+                    var textloginagain = "Wrong password";
+                    return (
+                            <div>
+                                <LoginStatus text = {textloginagain} />
+                                <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Login again</a>.</div>
+                            </div>
+                            );
         } else if (FormLogin.loginState === ws.WsState.REGISTER ) {
                     label = <div>
                         <h1><br/>Registration</h1><br/>
@@ -123,7 +139,13 @@ export class FormLogin extends Component {
                         <input type="text" name="pass" onChange={this.handleChange} />
                         </div>;
         } else if (FormLogin.loginState === ws.WsState.REGISTERED) {
-                    return LoginStatus("OK. You are registered as " + this.state.login);
+                    var textlogin = "OK. You are registered as " + this.state.login;
+                    return (
+                            <div>
+                                <LoginStatus text = {textlogin} />
+                                <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Login now</a>.</div>
+                            </div>
+                            );
         } else {
                     return LoginStatus("Sorry, but registration failed. Please try again.");
         }
