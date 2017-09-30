@@ -128,6 +128,10 @@ var ws_state = WsState.LOGIN;
 var login_ = '';
 var password_ = '';
 
+function login() {
+    return login_;
+}
+
 function rx_msg_login_ack(data) {
     var index = require('./index.js');
     clearInterval(index.interval_id);
@@ -171,7 +175,7 @@ function rx_msg_login_ack(data) {
     } else {
         alert("Unknown login state response received...")
         FL.FormLogin.updateLoginState(WsState.REGISTER_FAIL);
-        ReactDOM.render(<FL.FormLogin />, document.getElementById('root'));
+        ReactDOM.render(<FL.FormLogin />, document.getElementById('main'));
     }
 }
 
@@ -367,4 +371,5 @@ module.exports = {
     password_: password_,
     ws_state: ws_state,
     WsState: WsState,
+    login: login,
 };

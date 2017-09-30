@@ -77,11 +77,19 @@ export class FormLogin extends Component {
   handleRegisterClick(e) {
        e.preventDefault();
        FormLogin.updateLoginState(ws.WsState.REGISTER);
+       ReactDOM.render(<div></div>, document.getElementById('headerwrapper'));
        ReactDOM.render(<FormLogin />, document.getElementById('root'));
   }
 
   handleLoginNowClick(e) {
        e.preventDefault();
+       const element = (
+                        <div>
+                            <div id="header-text">Notka</div>
+                            online clipboard<br/><br/>
+                        </div>
+       );
+       ReactDOM.render(element, document.getElementById('headerwrapper'));
        FormLogin.updateLoginState(ws.WsState.LOGIN);
        var newState = { login: '', pass: ''};
        this.setState(newState);
@@ -100,8 +108,8 @@ export class FormLogin extends Component {
         let label = null;
         if (FormLogin.loginState === ws.WsState.LOGIN ) {
             label = <div>
-            <h1><br/>Login</h1>
-            <div id="register-text">Don't you have an account yet? Please <a href="" onClick={this.handleRegisterClick}>register</a>.</div>
+            <h1>Login</h1>
+            <div id="register-text">Don't you have an account yet? Please <a href="" onClick={this.handleRegisterClick}>register</a>.</div><br/>
             <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
           </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGIN_PASS) {
@@ -130,15 +138,16 @@ export class FormLogin extends Component {
                             );
         } else if (FormLogin.loginState === ws.WsState.REGISTER ) {
                     label = <div>
-                        <h1><br/>Registration</h1><br/>
-                        Registration, just as the complete notka service - is absolutely free of charge.<br/>Leave the password empty if you prefer to login with no password.
-                        <h1><br/>Login</h1>
+                        <h1>Registration</h1><br/>
+                        Registration, just as the complete notka service - is absolutely free of charge. Leave the password empty if you prefer not to use it.
+                        <br/>
+                        <br/>Login<br/>
                         <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
-                        <h1><br/>Password</h1>
+                        <br/>Password<br/>
                         <input type="text" name="pass" onChange={this.handleChange} />
                         </div>;
         } else if (FormLogin.loginState === ws.WsState.REGISTERED) {
-                    var textlogin = "OK. You are registered as " + this.state.login;
+                    var textlogin = "OK. You are registered as " + ws.login();
                     return (
                             <div>
                                 <LoginStatus text = {textlogin} />
@@ -150,7 +159,7 @@ export class FormLogin extends Component {
         }
 
         return (
-            <div>
+            <div id="registerdiv">
                 <form onSubmit={this.handleSubmit}>
                 {label}
                 <input type="submit" value="Go" />

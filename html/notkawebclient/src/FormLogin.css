@@ -2,6 +2,13 @@ body {
         height: 100vh;
 }
 
+#headerwrapper {
+width: 100%;
+}
+
+#root {
+}
+
 #main {
         position: fixed;
         width: 100%;
@@ -16,6 +23,7 @@ body {
 }
 
 #header-text {
+        padding: 0;
         font-size: 100px;
 }
 
@@ -56,4 +64,16 @@ body {
 
 #loginnow-text {
         font-size: 25px;
+}
+
+#registerdiv {
+position: relative;
+width: 100%;
+text-align: center;
+top: 10%;
+white-space: pre-wrap;      /* CSS3 */
+white-space: -moz-pre-wrap; /* Firefox */
+white-space: -pre-wrap;     /* Opera <7 */
+white-space: -o-pre-wrap;   /* Opera 7 */
+word-wrap: break-word;      /* IE */
 }
