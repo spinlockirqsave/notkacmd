@@ -16,6 +16,7 @@
  */
 
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import './FormLogin.css';
 
 
@@ -35,6 +36,7 @@ export class FormLogin extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleRegisterClick = this.handleRegisterClick;
   }
 
   static loginState = ws.WsState.LOGIN;
@@ -71,6 +73,12 @@ export class FormLogin extends Component {
     ws.tx_msg_login(this.state.login, this.state.pass);
   }
 
+  handleRegisterClick(e) {
+       e.preventDefault();
+       FormLogin.updateLoginState(ws.WsState.REGISTER);
+       ReactDOM.render(<FormLogin />, document.getElementById('root'));
+  }
+
   static getLoginState() {
         return FormLogin.loginState;
   }
@@ -84,6 +92,7 @@ export class FormLogin extends Component {
         if (FormLogin.loginState === ws.WsState.LOGIN ) {
             label = <div>
             <h1><br/>Login</h1>
+            <div id="register-text">Don't you have an account yet? Please <a href="" onClick={this.handleRegisterClick}>register</a>.</div>
             <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
           </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGIN_PASS) {
@@ -106,8 +115,8 @@ export class FormLogin extends Component {
                     return LoginStatus("Logging failed");
         } else if (FormLogin.loginState === ws.WsState.REGISTER ) {
                     label = <div>
-                        <h1><br/>Register</h1><br/>
-                        Please register.<br/>Leave the password empty if you want to login without password.
+                        <h1><br/>Registration</h1><br/>
+                        Registration, just as the complete notka service - is absolutely free of charge.<br/>Leave the password empty if you prefer to login with no password.
                         <h1><br/>Login</h1>
                         <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
                         <h1><br/>Password</h1>

@@ -49,3 +49,7 @@ body {
         top: 160px;
         width: 100%;
 }
+
+#register-text {
+        font-size: 15px;
+}

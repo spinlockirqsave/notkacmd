@@ -142,12 +142,21 @@ function rx_msg_login_ack(data) {
     clearInterval(index.interval_id);
     var raw_msg = new Uint8Array(data);
     var error_code = raw_msg[8];
+    var loginState = FL.FormLogin.getLoginState();
+
     if (error_code === SrvLoginState.LOGGED_IN) {
             // Login successful.
             Greeting(login_);
             ReactDOM.render(React.createElement(FN.FormNotka), document.getElementById('Notka-text'));
     } else if (error_code === SrvLoginState.NO_SUCH_USER) {
             // No such user.
+            if (loginState === WsState.REGISTER) {
+                    // User clicked Register and sent login/pass so backend responded
+                    // no such user message. Need to resend same login/pass to actually register
+                    // in the database.
+                    tx_msg_login(login_, password_);
+                    return;
+            }
             FL.FormLogin.updateLoginState(WsState.REGISTER);
             ReactDOM.render(<FL.FormLogin />, document.getElementById('root'));
     } else if (error_code === SrvLoginState.WRONG_PASSWORD) {
@@ -229,6 +238,46 @@ var MsgTXId = {
         IdMsgNotka              : 4
 }
 
+var tx_msg_login = function(login, pass) {
+        if (websocket.readyState !== 1) {
+            alert("We are sorry, but we cannot connect to the server...");
+            return;
+        }
+
+        login_ = login;
+        password_ = pass;
+        var msg = new ArrayBuffer(8);             // 4 bytes - id, 4 - len
+        var bufView32 = new Uint32Array(msg);     // by default js uses big endian
+        bufView32[0] = 2;                         // MsgRX::MsgLogin (rx from server point of view)
+        bufView32[1] = 64;                        // payload length, login 32 bytes + pass 32 bytes
+        if (endiannes === 0) {                    // but if this machine is le
+                console.log("swapping");
+                bufView32[0] = swap32(bufView32[0]);
+                bufView32[1] = swap32(bufView32[1]);
+        }
+
+        var login_bin = new ArrayBuffer(32);
+        var bufView8 = new Uint8Array(login_bin);
+        for (var i=0, strLen=login.length; i<strLen && i<32; i++) {
+                bufView8[i] = login.charCodeAt(i);
+        }
+
+        var pass_bin = new ArrayBuffer(32);
+        bufView8 = new Uint8Array(pass_bin);
+        for (i=0, strLen=pass.length; i<strLen && i<32; i++) {
+                bufView8[i] = pass.charCodeAt(i);
+        }
+
+        msg = _appendBuffer(msg, login_bin);
+        msg = _appendBuffer(msg, pass_bin);
+
+        if (websocket != null)
+        {
+                websocket.send(msg);
+                console.log("tx_msg_login: " + msg);
+        }
+}
+
 module.exports = {
     initWebSocket: function () {
         try {
@@ -289,45 +338,6 @@ module.exports = {
             debug('ERROR: ' + exception);
         }
     },
-    tx_msg_login: function(login, pass) {
-            if (websocket.readyState !== 1) {
-                alert("We are sorry, but we cannot connect to the server...");
-                return;
-            }
-
-            login_ = login;
-            password_ = pass;
-            var msg = new ArrayBuffer(8);             // 4 bytes - id, 4 - len
-            var bufView32 = new Uint32Array(msg);     // by default js uses big endian
-            bufView32[0] = 2;                         // MsgRX::MsgLogin (rx from server point of view)
-            bufView32[1] = 64;                        // payload length, login 32 bytes + pass 32 bytes
-            if (endiannes === 0) {                    // but if this machine is le
-                    console.log("swapping");
-                    bufView32[0] = swap32(bufView32[0]);
-                    bufView32[1] = swap32(bufView32[1]);
-            }
-
-            var login_bin = new ArrayBuffer(32);
-            var bufView8 = new Uint8Array(login_bin);
-            for (var i=0, strLen=login.length; i<strLen && i<32; i++) {
-                    bufView8[i] = login.charCodeAt(i);
-            }
-
-            var pass_bin = new ArrayBuffer(32);
-            bufView8 = new Uint8Array(pass_bin);
-            for (i=0, strLen=pass.length; i<strLen && i<32; i++) {
-                    bufView8[i] = pass.charCodeAt(i);
-            }
-
-            msg = _appendBuffer(msg, login_bin);
-            msg = _appendBuffer(msg, pass_bin);
-
-            if (websocket != null)
-            {
-                    websocket.send(msg);
-                    console.log("tx_msg_login: " + msg);
-            }
-    },
     tx_msg_save_req: function() {
             var msg = new ArrayBuffer(8);             // 4 bytes - id, 4 - len
             var bufView32 = new Uint32Array(msg);     // by default js uses big endian
@@ -363,6 +373,7 @@ module.exports = {
                     console.log("tx_msg_save_req: " + msg);
             }
     },
+    tx_msg_login: tx_msg_login,
     login_: login_,
     password_: password_,
     ws_state: ws_state,
