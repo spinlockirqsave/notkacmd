@@ -82,7 +82,6 @@ export class FormLogin extends Component {
 
   handleLoginNowClick(e) {
        e.preventDefault();
-       alert("LoginNow clicked");
        FormLogin.updateLoginState(ws.WsState.LOGIN);
        var newState = { login: '', pass: ''};
        this.setState(newState);
