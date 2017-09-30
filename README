@@ -1,14 +1,15 @@
 Notka Online Clipboard
 =====================
 
-Notka is kind of online storage for text. In Polish it means 'short text message'.
+Notka is kind of online storage for text.
+In Polish it means 'short text', 'text snippet', 'scribble', 'chit'.
 You can open your notka in browser from any internet connected device
 and use/edit/save your text.
 
-In technology terms this is
+In technology terms it is:
 
         - small http server serving http/javascript content
-          with React (https://facebook.github.io/react)
+          written with React (https://facebook.github.io/react)
 
         - C++ backend server written with Qt
 
@@ -18,15 +19,15 @@ In technology terms this is
 Try it
 ======
 
-Try it online at www.notka.online
+Try it online at www.notka.online.
 Please register or login as a default user with following credentials:
 
         - user: "user"
         - password: "password"
 
-You can also register with login-only, no passowrd mode.
-Save text, reload the page or open it from different place
-and have your notka back.
+You can register in login-only, no passowrd mode if you like,
+this gives the fastest access to your content.
+Click 'save', login from different place and have your notka back.
 
 
 FEEDBACK/COMMENTS/CONTRIBUTIONS
