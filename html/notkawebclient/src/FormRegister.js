@@ -1,7 +1,7 @@
 /*
  * FormRegister.js
  *
- * Copyright(C) 2017, Piotr Gregor <piotrgregor@rsyncme.org>
+ * Copyright(C) 2017, Piotr Gregor <piotr@dataandsignal.com>
  *
  * Notka Online Clipboard
  *

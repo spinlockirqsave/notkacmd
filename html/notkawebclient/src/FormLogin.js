@@ -1,7 +1,7 @@
 /*
  * FormLogin.js
  *
- * Copyright(C) 2017, Piotr Gregor <piotrgregor@rsyncme.org>
+ * Copyright(C) 2017, Piotr Gregor <piotr@dataandsignal.com>
  *
  * Notka Online Clipboard
  *
@@ -108,8 +108,8 @@ export class FormLogin extends Component {
         let label = null;
         if (FormLogin.loginState === ws.WsState.LOGIN ) {
             label = <div>
-            <h1>Login</h1>
-            <div id="register-text">Don't you have an account yet? Please <a href="" onClick={this.handleRegisterClick}>register</a>.</div><br/>
+            <h1>Access your text by it's name.</h1>
+            <div id="register-text">Don't you have any notka yet? Don't worry, please <a href="" onClick={this.handleRegisterClick}>create one</a>.</div><br/>
             <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
           </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGIN_PASS) {
@@ -127,35 +127,35 @@ export class FormLogin extends Component {
                       <input type="text" name="pass" onChange={this.handleChange} ref="btnPass" />
                     </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGGED_IN) {
-                    return <LoginStatus text="OK" />;
+                    return <LoginStatus text="OK." />;
         } else if (FormLogin.loginState === ws.WsState.LOGGED_FAIL) {
-                    var textloginagain = "Wrong password";
+                    var textloginagain = "Wrong password. This notka is protected with different password.";
                     return (
                             <div>
                                 <LoginStatus text = {textloginagain} />
-                                <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Login again</a>.</div>
+                                <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Try again</a>.</div>
                             </div>
                             );
         } else if (FormLogin.loginState === ws.WsState.REGISTER ) {
                     label = <div>
-                        <h1>Registration</h1><br/>
-                        Registration, just as the complete notka service - is absolutely free of charge. Leave the password empty if you prefer not to use it.
+                        <h1>Create your notka</h1><br/>
+                        You can protect your text with password or just leave the password empty if you prefer not to use it. Notka without password is very comfortable to use - it's very quick and easy to access your text and share it, just give your friends a name of the notka you've created.
                         <br/>
-                        <br/>Login<br/>
+                        <br/>Notka name (title)<br/>
                         <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
-                        <br/>Password<br/>
+                        <br/>Password (optional)<br/>
                         <input type="text" name="pass" onChange={this.handleChange} />
                         </div>;
         } else if (FormLogin.loginState === ws.WsState.REGISTERED) {
-                    var textlogin = "OK. You are registered as " + ws.login();
+                    var textlogin = "Perfect! Your notka " + ws.login() + " is ready.";
                     return (
                             <div>
                                 <LoginStatus text = {textlogin} />
-                                <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Login now</a>.</div>
+                                <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Try it now</a>.</div>
                             </div>
                             );
         } else {
-                    return LoginStatus("Sorry, but registration failed. Please try again.");
+                    return LoginStatus("Sorry, something went wrong... Please try again.");
         }
 
         return (

@@ -1,7 +1,7 @@
 /*
  * Websocket.js
  *
- * Copyright(C) 2017, Piotr Gregor <piotrgregor@rsyncme.org>
+ * Copyright(C) 2017, Piotr Gregor <piotr@dataandsignal.com>
  *
  * Notka Online Clipboard
  *
@@ -100,7 +100,7 @@ function tx_MsgSYN() {
 function Greeting(name) {
   const element = (
     <div>
-      <h1>Hello {name}</h1>
+      <h1>{name}</h1>
     </div>
   );
   ReactDOM.render(element, document.getElementById('main'));
