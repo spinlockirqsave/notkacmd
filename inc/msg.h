@@ -133,7 +133,7 @@ public:
                 MsgRX(Id::IdMsgLogin, payload_len, ws_session)
         {}
         ~MsgLogin() {}
-        MsgLogin(const MsgSaveReq&) = delete;
+        MsgLogin(const MsgLogin&) = delete;
         MsgLogin& operator=(const MsgLogin&) = delete;
         void process(QDataStream &ds) override;
 };
