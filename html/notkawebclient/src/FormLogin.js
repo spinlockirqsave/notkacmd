@@ -18,6 +18,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './FormLogin.css';
+import notka_6 from './notka_6.png'
 
 
 var ws = require('./Websocket.js');
@@ -85,7 +86,7 @@ export class FormLogin extends Component {
        e.preventDefault();
        const element = (
                         <div>
-                            <div id="header-text">Notka</div>
+                            <div id="header-text"><img src={notka_6} alt="Notka" /></div>
                             online clipboard<br/><br/>
                         </div>
        );
@@ -108,7 +109,7 @@ export class FormLogin extends Component {
         let label = null;
         if (FormLogin.loginState === ws.WsState.LOGIN ) {
             label = <div>
-            <h1>Access your text by it's name.</h1>
+            <h2>Access your text by it's name.</h2>
             <div id="register-text">Don't you have any notka yet? Don't worry, please <a href="" onClick={this.handleRegisterClick}>create one</a>.</div><br/>
             <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
           </div>;
