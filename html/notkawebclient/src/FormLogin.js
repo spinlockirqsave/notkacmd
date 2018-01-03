@@ -107,12 +107,14 @@ export class FormLogin extends Component {
 
   render() {
         let label = null;
+	let note = <div></div>;
         if (FormLogin.loginState === ws.WsState.LOGIN ) {
             label = <div>
-            <h2>Access your text by it's name.</h2>
-            <div id="register-text">Don't you have any notka yet? Don't worry, please <a href="" onClick={this.handleRegisterClick}>create one</a>.</div><br/>
+            <h2>Small cloud storage for your text.</h2>
+		<br/>Notka title<br/>
             <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
           </div>;
+		note = <div id="register-text">Don't you have any notka yet? You can <a href="" onClick={this.handleRegisterClick}>create one</a>.</div>;
         } else if (FormLogin.loginState === ws.WsState.LOGIN_PASS) {
                     /*var divStyle = {
                         color: 'green',
@@ -125,7 +127,7 @@ export class FormLogin extends Component {
                     };*/
                     label = <div>
                       <h1><br/>Password</h1>
-                      <input type="text" name="pass" onChange={this.handleChange} ref="btnPass" />
+                      <input type="password" name="pass" onChange={this.handleChange} ref="btnPass" />
                     </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGGED_IN) {
                     return <LoginStatus text="OK." />;
@@ -135,17 +137,18 @@ export class FormLogin extends Component {
                             <div>
                                 <LoginStatus text = {textloginagain} />
                                 <div id="loginnow-text"><a href="" onClick={this.handleLoginNowClick}>Try again</a>.</div>
+				<div id="register-text">Don't you have any notka yet? You can <a href="" onClick={this.handleRegisterClick}>create one</a>.</div>
                             </div>
                             );
         } else if (FormLogin.loginState === ws.WsState.REGISTER ) {
                     label = <div>
                         <h1>Create your notka</h1><br/>
-                        You can protect your text with password or just leave the password empty if you prefer not to use it. Notka without password is very comfortable to use - it's very quick and easy to access your text and share it, just give your friends a name of the notka you've created.
+                        You can protect your text with password or just leave the password empty if you prefer not to use it.
                         <br/>
-                        <br/>Notka name (title)<br/>
+                        <br/>Notka title<br/>
                         <input type="text" name="login" onChange={this.handleChange} ref="logininput" />
-                        <br/>Password (optional)<br/>
-                        <input type="text" name="pass" onChange={this.handleChange} />
+                        <br/>Optional password<br/>
+                        <input type="password" name="pass" onChange={this.handleChange} />
                         </div>;
         } else if (FormLogin.loginState === ws.WsState.REGISTERED) {
                     var textlogin = "Perfect! Your notka " + ws.login() + " is ready.";
@@ -164,6 +167,7 @@ export class FormLogin extends Component {
                 <form onSubmit={this.handleSubmit}>
                 {label}
                 <input type="submit" value="Go" />
+		{note}
                 </form>
             </div>
         );
