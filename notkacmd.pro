@@ -82,3 +82,6 @@ DISTFILES += \
     html/notkawebclient/public/index.html \
     html/webclient.html \
     html/notkawebclient/README.md
+
+OTHER_FILES += \
+    html/notkawebclient/src/AppRouter.js

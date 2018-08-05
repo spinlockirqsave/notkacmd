@@ -18,14 +18,23 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route} from "react-router-dom";
 import './index.css';
 
-import FormLogin from './FormLogin';
+import { FormLogin, ParamsRoute} from './FormLogin';
 import registerServiceWorker from './registerServiceWorker';
+import { AppRouter } from './AppRouter';
 
-ReactDOM.render(<FormLogin />, document.getElementById('root'));
+
+            ReactDOM.render((
+              <Router>
+                <AppRouter />
+              </Router>
+            ), document.getElementById('root'));
+
+//ReactDOM.render(<FormLogin />, document.getElementById('root'));
 
 registerServiceWorker();
 
 var ws = require('./Websocket.js');
-ws.initWebSocket();
+ws.initWebSocket(null);

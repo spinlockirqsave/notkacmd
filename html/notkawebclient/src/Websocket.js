@@ -24,6 +24,7 @@ var FN = require('./FormNotka.js');
 
 
 var wsUri = "ws://notka.online:1235";
+//var wsUri = "ws://localhost:1235";
 var websocket = null;
 var endiannes = 0;      // 0 - le, 1 - be
 
@@ -79,6 +80,23 @@ var _appendBuffer = function(buffer1, buffer2) {
   return tmp.buffer;
 };
 
+function waitForConnection (callback, interval) {
+    if (websocket.readyState === 1) {
+        callback();
+    } else {
+        setTimeout(function () {
+            waitForConnection(callback, interval);
+        }, interval);
+    }
+};
+
+function send_wait (msg) {
+
+    waitForConnection(function () {
+        websocket.send(msg);
+    }, 1000);
+}
+
 function tx_MsgSYN() {
         var msg = new ArrayBuffer(8);
         var bufView = new Uint32Array(msg);     // by default js uses big endian
@@ -91,7 +109,7 @@ function tx_MsgSYN() {
                         bufView[1] = swap32(bufView[1]);
                 }
 
-                websocket.send(msg);
+                send_wait(msg);
                 console.log( "sent MsgSYN :", '"'+msg+'"' );
                 debug(msg);
         }
@@ -110,7 +128,7 @@ var WsState = {
     LOGIN:      0,
     LOGIN_PASS: 1,
     LOGGED_IN:  2,
-    LOGGIN_FAIL: 3,
+    LOGIN_FAIL: 3,
     REGISTER: 4,
     REGISTERED: 5
 }
@@ -127,6 +145,7 @@ var SrvLoginState = {
 var ws_state = WsState.LOGIN;
 var login_ = '';
 var password_ = '';
+var props_;
 
 function login() {
     return login_;
@@ -160,7 +179,7 @@ function rx_msg_login_ack(data) {
             if (status === WsState.LOGIN) {
                 // Now give password.
                 FL.FormLogin.updateLoginState(WsState.LOGIN_PASS);
-                ReactDOM.render(<FL.FormLogin />, document.getElementById('root'));
+                ReactDOM.render(<FL.FormLogin login={login_} />, document.getElementById('root'));
             } else {
                     // Wrong password.
                     FL.FormLogin.updateLoginState(WsState.LOGIN_FAIL);
@@ -231,11 +250,8 @@ var MsgTXId = {
         IdMsgNotka              : 4
 }
 
+
 var tx_msg_login = function(login, pass) {
-        if (websocket.readyState !== 1) {
-            alert("We are sorry, but we cannot connect to the server...");
-            return;
-        }
 
         login_ = login;
         password_ = pass;
@@ -266,24 +282,39 @@ var tx_msg_login = function(login, pass) {
 
         if (websocket != null)
         {
-                websocket.send(msg);
+                send_wait(msg);
                 console.log("tx_msg_login: " + msg);
         }
 }
 
 module.exports = {
-    initWebSocket: function () {
+    initWebSocket: function (props) {
+
+        if (props_ && props_.autologin) {
+            return;
+        }
+
+        props_ = props;
+
         try {
-            if (websocket && websocket.readyState === 1)
-                websocket.close();
+            if (websocket && websocket.readyState === 1) {
+                return;
+            }
 
             websocket = new WebSocket(wsUri);
             websocket.binaryType = 'arraybuffer';
 
-            websocket.onopen = function (evt) {
+            websocket.onopen = () => {
                 debug("CONNECTED");
                 check_endianness();
                 tx_MsgSYN();
+
+                if (props_ && props_.autologin) {
+                    props_.autologin = false;
+                    login_ = props_.login;
+                    password_ = props_.pass;
+                    tx_msg_login(login_, password_);
+                }
             };
 
             websocket.onclose = function (evt) {
@@ -369,6 +400,7 @@ module.exports = {
     tx_msg_login: tx_msg_login,
     login_: login_,
     password_: password_,
+    props_ : props_,
     ws_state: ws_state,
     WsState: WsState,
     login: login,

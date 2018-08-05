@@ -17,6 +17,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+
 import './FormLogin.css';
 import notka_6 from './notka_6.png'
 
@@ -32,13 +33,28 @@ export class FormLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {login: '', pass: '', init: 0 };
+
+    if (props.login) {
+        this.state.login = props.login;
+    }
+    if (props.pass) {
+        this.state.pass = props.pass;
+    }
+
     if (this.state.init) {
         this.state.init++;
     }
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleRegisterClick = this.handleRegisterClick.bind(this);
     this.handleLoginNowClick = this.handleLoginNowClick.bind(this);
+    this.autologin = this.autologin.bind(this);
+
+    const autologin = props.autologin;
+    if (autologin) {
+        this.autologin(this.props);
+    }
   }
 
   static loginState = ws.WsState.LOGIN;
@@ -105,7 +121,15 @@ export class FormLogin extends Component {
         FormLogin.loginState = status;
   }
 
+  autologin(props) {
+        this.state.login = props.login;
+        this.state.pass = props.pass;
+        ws.initWebSocket(props);
+        //ws.tx_msg_login(this.state.login, this.state.pass);
+  }
+
   render() {
+
         let label = null;
 	let note = <div></div>;
         if (FormLogin.loginState === ws.WsState.LOGIN ) {
@@ -131,7 +155,7 @@ export class FormLogin extends Component {
                     </div>;
         } else if (FormLogin.loginState === ws.WsState.LOGGED_IN) {
                     return <LoginStatus text="OK." />;
-        } else if (FormLogin.loginState === ws.WsState.LOGGED_FAIL) {
+        } else if (FormLogin.loginState === ws.WsState.LOGIN_FAIL) {
                     var textloginagain = "Wrong password. This notka is protected with different password.";
                     return (
                             <div>
@@ -174,4 +198,3 @@ export class FormLogin extends Component {
   }
 }
 
-export default FormLogin;

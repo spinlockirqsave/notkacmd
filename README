@@ -1,7 +1,7 @@
 Notka Online Clipboard
 =====================
 
-Notka is kind of online storage for text.
+Notka is small online storage for text.
 In Polish it means 'short text', 'text snippet', 'scribble', 'chit'.
 You can open your notka in browser from any internet connected device
 and use/edit/save your text.
@@ -15,28 +15,31 @@ In technology terms it is:
 
         - MySql database
 
+It is easy to use and it works! Notka is on facebook, please like/share
+if you find notka OK-ish. Thanks!
+
 
 Try it
 ======
 
 Try it online at www.notka.online.
-Please register or login as a default user with following credentials:
+Go there and create as many notka as you wish, optionally protecting them
+with password. Click 'save' to store text in the cloud, then access it
+from  http://notka.online or by direct URL link and have your notka back.
 
-        - user: "user"
-        - password: "password"
+Dirct URL link access (API usage):
 
-You can register in login-only, no passowrd mode if you like,
-this gives the fastest access to your content.
-Click 'save', login from different place and have your notka back.
+http://notka.online/title - to get notka which is not protected with password
+http://notka.online/title/password - to get notka which is protected with password
+
+So if you created notka "foo" with no password, you can share it using link: http://notka.online/foo
+If it is protected additionally by password "bar" share it with: http://notka.online/foo/bar
 
 
-FEEDBACK/COMMENTS/CONTRIBUTIONS
+INFO
 ===============================
 
-All feedback is welcome, constructive comments are welcome,
-useful contributions are welcome.
 Source:		www.github.com/spinlockirqsave/notkacmd.git
-
 
 Copyright(C) 2017, Piotr Gregor <piotr@dataandsignal.com>
 GNU GPLv2
