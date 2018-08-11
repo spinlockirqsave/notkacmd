@@ -47,7 +47,7 @@ public:
          */
         explicit EndPointWebSocket(QWebSocketServer::SslMode mode,
                                    QHostAddress address,
-                                   quint16 port,
+                                   quint16 port, QString crt, QString key, QString ca_crt,
                                    QObject *parent = Q_NULLPTR);
         ~EndPointWebSocket();
 
@@ -84,6 +84,7 @@ private:
 
         QHostAddress                            address;
         quint16                                 port;
+        QString                                 crt, key, ca_crt;
 
         /**
          * QWebSocketServer stores the pointers to the sessions.

@@ -20,17 +20,26 @@
 
 #include "QtWebSockets/QWebSocketServer"
 #include "QtWebSockets/QWebSocket"
+#include <QFile>
+#include <QSslKey>
+#include <QSslConfiguration>
 #include <QDebug>
 
 
 EndPointWebSocket::EndPointWebSocket(QWebSocketServer::SslMode mode,
                                      QHostAddress address,
                                      quint16 port,
+                                     QString crt,
+                                     QString key,
+                                     QString ca_crt,
                                      QObject *parent) :
         QObject(parent),
         ws_server(new QWebSocketServer(QStringLiteral("Notka WebSocket EndPoint"), mode, this)),
         address(address),
         port(port),
+        crt(crt),
+        key(key),
+        ca_crt(ca_crt),
         ws_sessions(),
         thread_pool(parent)
 {
@@ -44,7 +53,40 @@ EndPointWebSocket::~EndPointWebSocket()
 
 int EndPointWebSocket::open()
 {
-        if (ws_server && ws_server->listen(address, port)) {
+        if (!ws_server) {
+                return -1;
+        }
+
+        if (ws_server->secureMode() == QWebSocketServer::SecureMode) {
+
+                QSslConfiguration sslConfiguration;
+
+                QFile certFile(crt);
+                QFile keyFile(key);
+                QFile ca_certFile(ca_crt);
+                certFile.open(QIODevice::ReadOnly);
+                keyFile.open(QIODevice::ReadOnly);
+                ca_certFile.open(QIODevice::ReadOnly);
+
+                QSslCertificate certificate(&certFile, QSsl::Pem);
+                QSslKey sslKey(&keyFile, QSsl::Rsa, QSsl::Pem);
+                QSslCertificate ca_certificate(&ca_certFile, QSsl::Pem);
+
+                sslConfiguration.setPeerVerifyMode(QSslSocket::VerifyNone);
+                sslConfiguration.setLocalCertificate(certificate);
+                sslConfiguration.setPrivateKey(sslKey);
+                QList<QSslCertificate> ca_list;
+                ca_list.append(ca_certificate);
+                sslConfiguration.setCaCertificates(ca_list);
+                sslConfiguration.setProtocol(QSsl::TlsV1SslV3);
+                ws_server->setSslConfiguration(sslConfiguration);
+
+                certFile.close();
+                keyFile.close();
+                ca_certFile.close();
+        }
+
+        if (ws_server->listen(address, port)) {
                 qDebug() << __func__ << QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss")
                          << "Listening on address " << address.toString() << " port " << port << "...";
                 return 0;
@@ -52,7 +94,7 @@ int EndPointWebSocket::open()
 
         qDebug() << __func__ << QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss")
                  << "Err, listen on address " << address.toString() << " port " << port << " failed.";
-        return -1;
+        return -2;
 }
 
 void EndPointWebSocket::close()

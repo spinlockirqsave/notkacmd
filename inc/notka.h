@@ -37,7 +37,7 @@ class Notka : public QObject
         Q_OBJECT
 
 public:
-        explicit Notka(QWidget *parent = 0);
+        explicit Notka(QString crt, QString key, QString ca_crt, QWidget *parent = 0);
         Notka(Notka const &) = delete;
         Notka& operator=(const Notka &) = delete;
         ~Notka();
@@ -52,9 +52,9 @@ private:
         void start_db_reconnect_task();
 
         inline QSharedPointer<NotkaEndPoint> ws_server_add(QWebSocketServer::SslMode mode,
-                           QHostAddress address, quint16 port);
+                           QHostAddress address, quint16 port, QString crt, QString key, QString ca_crt);
 
-        QSharedPointer<NotkaEndPoint> add_ws_server();
+        QSharedPointer<NotkaEndPoint> add_ws_server(QString crt, QString key, QString ca_crt);
 
 private slots:
         void ws_server_start_stop(NotkaEndPoint &endpoint, bool start);

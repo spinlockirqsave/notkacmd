@@ -67,6 +67,11 @@ public slots:
         void on_text_msg_rx(QString msg);
         void on_bin_msg_rx(QByteArray raw_msg);
 
+        /**
+         * Only for Secure Sockets.
+         */
+        void onSslErrors(const QList<QSslError> &errors);
+
 signals:
         void signal_bin_msg_tx(QWebSocket *ws, QByteArray raw_msg);
 

@@ -39,6 +39,9 @@ WebSocketSession::WebSocketSession(QWebSocket &ws,
 
         connect(this, &WebSocketSession::signal_bin_msg_tx,
                 &endpoint, &EndPointWebSocket::bin_msg_tx);
+
+        connect(&ws, QOverload<const QList<QSslError>&>::of(&QWebSocket::sslErrors),
+                    this, &WebSocketSession::onSslErrors);
 }
 
 /* TODO use signals to call close and deleteLater
@@ -78,4 +81,14 @@ void WebSocketSession::on_bin_msg_rx(QByteArray raw_msg)
 void WebSocketSession::bin_msg_tx(QByteArray raw_msg)
 {
         emit signal_bin_msg_tx(&ws, raw_msg);
+}
+
+void WebSocketSession::onSslErrors(const QList<QSslError> &errors)
+{
+        foreach (auto e, errors) {
+
+                qDebug() << __func__ <<
+                            QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss")
+                            << "SSL error " << e.errorString();
+        }
 }

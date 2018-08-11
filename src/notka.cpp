@@ -24,14 +24,14 @@
 #include "../inc/notka.h"
 
 
-Notka::Notka(QWidget *parent) :
+Notka::Notka(QString crt, QString key, QString ca_crt, QWidget *parent) :
         QObject(parent),
         endpoints(),
         task_list()
 {
 
         /* Add default server. */
-        auto endpoint = add_ws_server();
+        auto endpoint = add_ws_server(crt, key, ca_crt);
 
         if (endpoint)
                 ws_server_start_stop(*endpoint, 1);
@@ -72,10 +72,10 @@ void Notka::start_db_reconnect_task()
 }
 
 QSharedPointer<NotkaEndPoint> Notka::ws_server_add(QWebSocketServer::SslMode mode,
-                          QHostAddress address, quint16 port)
+                          QHostAddress address, quint16 port, QString crt, QString key, QString ca_crt)
 {
         /* Add new Web Socket server. */
-        QSharedPointer<NotkaEndPoint> e(new EndPointWebSocket(mode, address, port));
+        QSharedPointer<NotkaEndPoint> e(new EndPointWebSocket(mode, address, port, crt, key, ca_crt));
         endpoints.append(e);
         return e;
 }
@@ -89,13 +89,12 @@ void Notka::ws_server_start_stop(NotkaEndPoint &endpoint, bool start)
                 endpoint.close();
 }
 
-QSharedPointer<NotkaEndPoint> Notka::add_ws_server()
+QSharedPointer<NotkaEndPoint> Notka::add_ws_server(QString crt, QString key, QString ca_crt)
 {
-        QHostAddress ip(QHostAddress::Any);
+        QHostAddress ip(QHostAddress::AnyIPv4);
         quint16 port = 1235;
 
-        /* Insert socket into container. */
-        return ws_server_add(QWebSocketServer::NonSecureMode, ip, port);
+        return ws_server_add(QWebSocketServer::SecureMode, ip, port, crt, key, ca_crt);
 }
 
 /* Signals. */

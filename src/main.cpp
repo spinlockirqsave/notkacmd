@@ -21,16 +21,30 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCommandLineOption>
 #include "../inc/globals.h"
+#include <QDebug>
 
 
 namespace Database {
         QMutex mutex;
 }
 
+static void usage(char *argv[])
+{
+        qDebug() << __func__ << QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss")
+                << "Usage: \n\n" << argv[0] << " SSLcert SSLkey SSLcacert\n\n";
+}
+
 int main(int argc, char *argv[])
 {
         QApplication a(argc, argv);
-        Notka notka;
+
+        if (argc < 4) {
+
+                usage(argv);
+                return EXIT_FAILURE;
+        }
+
+        Notka notka(argv[1], argv[2], argv[3]);
 
         return a.exec();
 }
