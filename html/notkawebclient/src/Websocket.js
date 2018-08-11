@@ -94,7 +94,7 @@ function send_wait (msg) {
 
     waitForConnection(function () {
         websocket.send(msg);
-    }, 1000);
+    }, 100);
 }
 
 function tx_MsgSYN() {
