@@ -18,7 +18,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import './FormLogin.css';
 import notka_6 from './notka_6.png'
 
 
