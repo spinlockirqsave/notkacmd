@@ -159,7 +159,7 @@ bool Db::get_notka(QString user, QByteArray &notka)
         db.transaction();
 
         QSqlQuery query(db);
-        query.prepare("SELECT notka FROM notkas WHERE user = :user");
+        query.prepare("SELECT CONVERT(notka USING utf8) FROM notkas WHERE user = :user");
         query.bindValue(0, user);
         query.exec();
 

@@ -24,7 +24,7 @@ var FN = require('./FormNotka.js');
 
 
 var wsUri = "wss://notka.online:1235";
-//var wsUri = "wss://localhost:1235";
+//var wsUri = "ws://localhost:1235";
 var websocket = null;
 var endiannes = 0;      // 0 - le, 1 - be
 
@@ -53,16 +53,15 @@ function check_endianness() {
 }
 
 function str2ab(str) {
-    var buf = new ArrayBuffer(str.length); // but should be 2 bytes for each char for Unicode
-    var bufView = new Uint8Array(buf);
+    var buf = new ArrayBuffer(str.length *2); // but should be 2 bytes for each char for Unicode
     for (var i=0, strLen=str.length; i<strLen; i++) {
-        bufView[i] = str.charCodeAt(i);
+        buf[i] = str.charCodeAt(i);
     }
     return buf;
 }
 
 function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint16Array(buf));
+  return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
 
 /**
@@ -202,7 +201,7 @@ function rx_msg_notka(data) {
     var raw_msg = new Uint8Array(data);
     var raw_notka = raw_msg.subarray(8);
     //var dec = new TextDecoder();
-    var text = ab2str(raw_notka);
+    var text = new TextDecoder().decode(raw_notka);
     FN.FormNotka.setNotka(text);
     //ReactDOM.render(<FN.FormNotka />, document.getElementById('container'));
     //ReactDOM.render(render_header, document.getElementById('container').parentNode);
@@ -265,17 +264,13 @@ var tx_msg_login = function(login, pass) {
                 bufView32[1] = swap32(bufView32[1]);
         }
 
-        var login_bin = new ArrayBuffer(32);
-        var bufView8 = new Uint8Array(login_bin);
-        for (var i=0, strLen=login.length; i<strLen && i<32; i++) {
-                bufView8[i] = login.charCodeAt(i);
-        }
+        var login_bin = new TextEncoder().encode(login);
+        login_bin = _appendBuffer(login_bin, new Uint8Array(32));
+        login_bin = login_bin.slice(0, 32);
 
-        var pass_bin = new ArrayBuffer(32);
-        bufView8 = new Uint8Array(pass_bin);
-        for (i=0, strLen=pass.length; i<strLen && i<32; i++) {
-                bufView8[i] = pass.charCodeAt(i);
-        }
+        var pass_bin = new TextEncoder().encode(pass);
+        pass_bin = _appendBuffer(pass_bin, new Uint8Array(32));
+        pass_bin = pass_bin.slice(0, 32);
 
         msg = _appendBuffer(msg, login_bin);
         msg = _appendBuffer(msg, pass_bin);
@@ -380,9 +375,9 @@ module.exports = {
             }
 
             var notka = document.getElementById("NotkaTextArea").value;
-            var notka_bin = str2ab(notka);
+            var notka_bin = new TextEncoder().encode(notka);
 
-            bufView32[1] = 32 + notka.length;               // payload length = 32 byte login + notka len
+            bufView32[1] = 32 + notka_bin.byteLength;       // payload length = 32 byte login + notka len
             if (endiannes === 0) {                          // but if this machine is le
                     console.log("swapping");
                     bufView32[1] = swap32(bufView32[1]);
